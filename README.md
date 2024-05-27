@@ -1,4 +1,4 @@
 <p align="center">
-    <img src="./docs/logo.png" width="500">
-    <h1 align="center">Ghost Ship</h1>
+    <img src="./docs/logo.png" width="400">
+    <h1 align="center">Ghost Ship Framework 🏴‍☠️</h1>
 </p>
