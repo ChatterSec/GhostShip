@@ -7,4 +7,4 @@
 
 ## Open-source tools
 
-- [fuff](https://github.com/ffuf/ffuf)
+- [fuff - Fast web fuzzer written in Go ](https://github.com/ffuf/ffuf)
