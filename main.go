@@ -36,10 +36,8 @@ func exit() {
 }
 
 func main() {
-	// disable input buffering
-	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-	// do not display entered characters on the screen
-	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
 
 	// listen for Ctrl+C, and when it's received, revert the terminal settings
 	c := make(chan os.Signal)
