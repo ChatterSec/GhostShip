@@ -12,6 +12,9 @@
 
 ```
 go mod tidy
+
+# Run GhostShip
+go run ./src/.
 ```
 
 ## Dependencies

@@ -29,7 +29,7 @@ func exit() {
 	os.Exit(0)
 }
 
-func main() {
+func init() {
 	// listen for Ctrl+C, and when it's received, revert the terminal settings
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -38,6 +38,7 @@ func main() {
 		exit()
 	}()
 
+	// Disable inputs
 	if runtime.GOOS == "windows" {
 		setConsoleMode()
 	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
@@ -50,6 +51,9 @@ func main() {
 		exec.Command("stty", flag, "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
 		exec.Command("stty", flag, "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
 	}
+}
+
+func main() {
 
 	var (
 		hovering          = 0
@@ -94,12 +98,13 @@ func main() {
 		}
 	}
 
-	for { // Input loop
+	for {
 		if !first_loop {
 			os.Stdin.Read(b)
 		}
 
-		if b[0] == 107 { // Up
+		// Handle "k" Key Press (aka up)
+		if b[0] == 107 {
 			if hovering == 0 {
 				hovering = len(options) - 1
 			} else {
@@ -107,7 +112,8 @@ func main() {
 			}
 		}
 
-		if b[0] == 106 { // Down
+		// Handle "j" Key Press (aka down)
+		if b[0] == 106 {
 			if hovering == len(options)-1 {
 				hovering = 0
 			} else {
@@ -115,8 +121,8 @@ func main() {
 			}
 		}
 
-		if b[0] == 32 { // space
-
+		// Handle Space Bar Press
+		if b[0] == 32 {
 			if hovering == 3 { // Report an issue.
 				exit()
 			}
@@ -130,10 +136,10 @@ func main() {
 			for i := range options {
 				if i == hovering {
 					colors[i] = "\033[32m"
-					cursor[i] = ">"
+					cursor[i] = " >"
 				} else {
 					colors[i] = "\033[0m"
-					cursor[i] = "-"
+					cursor[i] = " -"
 				}
 			}
 
@@ -142,6 +148,7 @@ func main() {
 				fmt.Print("\033[2K")
 			}
 
+			// Print Menu
 			fmt.Println("")
 			fmt.Println(ke + kraken[0] + "\033[0m")
 			fmt.Println(ke + kraken[1] + "\033[0m\033[1m GhostShip v0.1.0")
@@ -150,11 +157,11 @@ func main() {
 			fmt.Println(ke + kraken[4] + "\033[0m\033[2m A pirate-themed penetration testing framework,")
 			fmt.Println(ke + kraken[5] + "\033[0m\033[2m built using reliable tools and custom scripts.")
 			fmt.Println(ke + kraken[6] + "\033[0m")
-			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + " " + cursor[0] + " man-o-war    \033[2m(tools)")
-			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + " " + cursor[1] + " booty        \033[2m(captures)")
-			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + " " + cursor[2] + " sos          \033[2m(help)")
-			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + " " + cursor[3] + " bounty       \033[2m(report issue)")
-			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + " " + cursor[4] + " disembark    \033[2m(exit)")
+			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + cursor[0] + " man-o-war    \033[2m(tools)")
+			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + cursor[1] + " booty        \033[2m(captures)")
+			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + cursor[2] + " sos          \033[2m(help)")
+			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + cursor[3] + " bounty       \033[2m(report issue)")
+			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + cursor[4] + " disembark    \033[2m(exit)")
 			fmt.Println(ke + kraken[12] + "\033[0m")
 			fmt.Println(ke + kraken[13] + "\033[0m\033[2m" + ` (k = up, j = down, space = submit)`)
 			fmt.Println(ke + kraken[14] + "\033[0m")
