@@ -75,6 +75,8 @@ func main() {
 			}
 		}
 
+		fmt.Println(b)
+
 		if b[0] == 66 || b[0] == 65 || first_loop {
 			for i := range options {
 				if i == hovering {

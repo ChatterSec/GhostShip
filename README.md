@@ -7,3 +7,8 @@
     <summary>Preview</summary>
     <img src="./docs/demo.png" width="600">
 </details>
+
+## Dependencies
+
+- Python 3.x
+- Golang >= 1.18.x
