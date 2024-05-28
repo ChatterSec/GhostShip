@@ -29,30 +29,6 @@ func exit() {
 	os.Exit(0)
 }
 
-func init() {
-	// listen for Ctrl+C, and when it's received, revert the terminal settings
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		exit()
-	}()
-
-	// Disable inputs
-	if runtime.GOOS == "windows" {
-		setConsoleMode()
-	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
-		var flag string
-		if runtime.GOOS == "darwin" {
-			flag = "-f"
-		} else {
-			flag = "-F"
-		}
-		exec.Command("stty", flag, "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
-		exec.Command("stty", flag, "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
-	}
-}
-
 func clearTerminal() {
 	fmt.Printf("\033[%dA", 17)
 	fmt.Print("\033[2K")
@@ -77,28 +53,9 @@ func clearTerminal() {
 
 func toolsMenu() {
 
-	/* ke := "\033[0m\033[32m\033[1m"
-	kraken := []string{
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-		"|",
-	} */
-
 	var (
 		hovering          = 0
-		options           = []string{"DetectDee", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test"}
+		options           = []string{"Back", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test"}
 		colors            = make([]string, len(options))
 		cursor            = make([]string, len(options))
 		first_loop        = true
@@ -131,24 +88,9 @@ func toolsMenu() {
 		// Handle Space Bar Press
 		if b[0] == 32 {
 
-			if hovering == 0 { // tools
-				exit()
-			}
-
-			if hovering == 1 { // captures
-				exit()
-			}
-
-			if hovering == 2 { // Help
-				exit()
-			}
-
-			if hovering == 3 { // Report an issue
-				exit()
-			}
-
-			if hovering == 4 { // Exit
-				exit()
+			if hovering == 0 { // Back
+				clearTerminal()
+				mainMenu(true)
 			}
 		}
 
@@ -168,7 +110,7 @@ func toolsMenu() {
 
 			// Print Menu
 			fmt.Println(" ")
-			fmt.Println(colors[0] + cursor[0] + " DetectDee" + "\033[0m   | " + colors[15] + cursor[15] + " DetectDee")
+			fmt.Println(colors[0] + cursor[0] + " Go Back  " + "\033[0m   | " + colors[15] + cursor[15] + " DetectDee")
 			fmt.Println(colors[1] + cursor[1] + " DetectDee" + "\033[0m   | " + colors[16] + cursor[16] + " DetectDee")
 			fmt.Println(colors[2] + cursor[2] + " DetectDee" + "\033[0m   | " + colors[17] + cursor[17] + " DetectDee")
 			fmt.Println(colors[3] + cursor[3] + " DetectDee" + "\033[0m   | " + colors[18] + cursor[18] + " DetectDee")
@@ -190,7 +132,7 @@ func toolsMenu() {
 	}
 }
 
-func main() {
+func mainMenu(init_clear bool) {
 
 	var (
 		hovering          = 0
@@ -198,6 +140,7 @@ func main() {
 		colors            = make([]string, len(options))
 		cursor            = make([]string, len(options))
 		first_loop        = true
+		clear             = init_clear
 		b          []byte = make([]byte, 1)
 	)
 
@@ -300,7 +243,7 @@ func main() {
 				}
 			}
 
-			if !first_loop {
+			if !first_loop || clear {
 				fmt.Printf("\033[%dA", 17)
 				fmt.Print("\033[2K")
 			}
@@ -326,5 +269,33 @@ func main() {
 		}
 
 		first_loop = false
+		clear = false
 	}
+}
+
+func main() {
+
+	// listen for Ctrl+C, and when it's received, revert the terminal settings
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		exit()
+	}()
+
+	// Disable inputs
+	if runtime.GOOS == "windows" {
+		setConsoleMode()
+	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+		var flag string
+		if runtime.GOOS == "darwin" {
+			flag = "-f"
+		} else {
+			flag = "-F"
+		}
+		exec.Command("stty", flag, "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
+		exec.Command("stty", flag, "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
+	}
+
+	mainMenu(false)
 }
