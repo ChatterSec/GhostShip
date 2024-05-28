@@ -1,10 +1,9 @@
-# Ghost Ship Framework 🏴‍☠️
-
 <p align="center">
-    <img src="./docs/demo.png" width="400">
+    <img src="./docs/logo.png" width="400">
+    <h1 align="center">Ghost Ship Framework 🏴‍☠️</h1>
 </p>
 
-
-## Open-source tools
-
-- [fuff - Fast web fuzzer written in Go ](https://github.com/ffuf/ffuf)
+<details>
+    <summary>Preview</summary>
+    <img src="./docs/demo.png" width="600">
+</details>
