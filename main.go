@@ -115,7 +115,7 @@ func main() {
 			}
 		}
 
-		if b[0] == 10 { // Enter
+		if b[0] == 32 { // space
 
 			if hovering == 3 { // Report an issue.
 				exit()
@@ -156,7 +156,7 @@ func main() {
 			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + " " + cursor[3] + " bounty       \033[2m(report issue)")
 			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + " " + cursor[4] + " disembark    \033[2m(exit)")
 			fmt.Println(ke + kraken[12] + "\033[0m")
-			fmt.Println(ke + kraken[13] + "\033[0m\033[2m" + ` (k = up, j = down, enter = submit)`)
+			fmt.Println(ke + kraken[13] + "\033[0m\033[2m" + ` (k = up, j = down, space = submit)`)
 			fmt.Println(ke + kraken[14] + "\033[0m")
 			fmt.Println("")
 		}
