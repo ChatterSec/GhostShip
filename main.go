@@ -77,7 +77,7 @@ func main() {
 			}
 		}
 
-		fmt.Println(b)
+		//fmt.Println(b)
 
 		if b[0] == 106 || b[0] == 107 || first_loop {
 			for i := range options {
