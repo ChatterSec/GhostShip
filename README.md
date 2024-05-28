@@ -1,8 +1,8 @@
-<p align="center">
-    <img src="./docs/logo.png" width="400">
-    <h1 align="center">Ghost Ship Framework 🏴‍☠️</h1>
-</p>
+# Ghost Ship Framework 🏴‍☠️
 
+<p align="center">
+    <img src="./docs/demo.png" width="400">
+</p>
 
 
 ## Open-source tools
