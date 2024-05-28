@@ -59,7 +59,8 @@ func main() {
 			os.Stdin.Read(b)
 		}
 
-		if b[0] == 65 {
+		// Up
+		if b[0] == 107 {
 			if hovering == 0 {
 				hovering = len(options) - 1
 			} else {
@@ -67,7 +68,8 @@ func main() {
 			}
 		}
 
-		if b[0] == 66 {
+		// Down
+		if b[0] == 106 {
 			if hovering == len(options)-1 {
 				hovering = 0
 			} else {
@@ -75,9 +77,9 @@ func main() {
 			}
 		}
 
-		fmt.Println(b)
+		// fmt.Println(b)
 
-		if b[0] == 66 || b[0] == 65 || first_loop {
+		if b[0] == 106 || b[0] == 107 || first_loop {
 			for i := range options {
 				if i == hovering {
 					colors[i] = "\033[32m"
@@ -107,7 +109,7 @@ func main() {
 ⠀⠀⣠⣶⠟⠫⣤⠀⠀⢸⣿⠀⣸⣿⢇⡤⢼⣧⠀⠀⠀⢀⣿` + colors[3] + "\033[0m\t " + cursor[3] + ` report issue` + "\033[32m\033[1m" + `⠀
 ⠀⣾⡏⠀⡀⣠⡟⠀⠀⢀⣿⣾⠟⠁⣿⡄⠀⠻⣷⣤⣤⡾⠋` + colors[4] + "\033[0m\t " + cursor[4] + " disembark \033[2m(exit)" + "\033[0m\033[32m\033[1m" + `⠀
 ⠀⠙⠷⠾⠁⠻⣧⣀⣤⣾⣿⠋⠀⠀⢸⣧⠀⠀⠀⠉⠁
-⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿` + "\033[0m\033[2m\t " + `(use arrow keys)` + "\033[0m\033[32m\033[1m" + `
+⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿` + "\033[0m\033[2m\t " + `(k = up, j = down, enter = submit)` + "\033[0m\033[32m\033[1m" + `
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠿⠟⠛⠁` + "\033[0m")
 		}
 

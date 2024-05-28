@@ -8,6 +8,12 @@
     <img src="./docs/demo.png" width="600">
 </details>
 
+## Setup
+
+```
+go mod tidy
+```
+
 ## Dependencies
 
 - Python 3.x
