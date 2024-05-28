@@ -13,7 +13,7 @@
 ```
 go mod tidy
 
-# Run GhostShip
+# Run GhostShsiteip
 go run ./src/.
 ```
 

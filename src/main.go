@@ -53,6 +53,143 @@ func init() {
 	}
 }
 
+func clearTerminal() {
+	fmt.Printf("\033[%dA", 17)
+	fmt.Print("\033[2K")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+	fmt.Println("                                                                                    ")
+}
+
+func toolsMenu() {
+
+	/* ke := "\033[0m\033[32m\033[1m"
+	kraken := []string{
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+		"|",
+	} */
+
+	var (
+		hovering          = 0
+		options           = []string{"DetectDee", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test"}
+		colors            = make([]string, len(options))
+		cursor            = make([]string, len(options))
+		first_loop        = true
+		b          []byte = make([]byte, 1)
+	)
+
+	for {
+		if !first_loop {
+			os.Stdin.Read(b)
+		}
+
+		// Handle "k" Key Press (aka up)
+		if b[0] == 107 {
+			if hovering == 0 {
+				hovering = len(options) - 1
+			} else {
+				hovering -= 1
+			}
+		}
+
+		// Handle "j" Key Press (aka down)
+		if b[0] == 106 {
+			if hovering == len(options)-1 {
+				hovering = 0
+			} else {
+				hovering += 1
+			}
+		}
+
+		// Handle Space Bar Press
+		if b[0] == 32 {
+
+			if hovering == 0 { // tools
+				exit()
+			}
+
+			if hovering == 1 { // captures
+				exit()
+			}
+
+			if hovering == 2 { // Help
+				exit()
+			}
+
+			if hovering == 3 { // Report an issue
+				exit()
+			}
+
+			if hovering == 4 { // Exit
+				exit()
+			}
+		}
+
+		if b[0] == 106 || b[0] == 107 || first_loop {
+			for i := range options {
+				if i == hovering {
+					colors[i] = "\033[32m"
+					cursor[i] = " >"
+				} else {
+					colors[i] = "\033[0m"
+					cursor[i] = " -"
+				}
+			}
+
+			fmt.Printf("\033[%dA", 17)
+			fmt.Print("\033[2K")
+
+			// Print Menu
+			fmt.Println(" ")
+			fmt.Println(colors[0] + cursor[0] + " DetectDee" + "\033[0m   | " + colors[15] + cursor[15] + " DetectDee")
+			fmt.Println(colors[1] + cursor[1] + " DetectDee" + "\033[0m   | " + colors[16] + cursor[16] + " DetectDee")
+			fmt.Println(colors[2] + cursor[2] + " DetectDee" + "\033[0m   | " + colors[17] + cursor[17] + " DetectDee")
+			fmt.Println(colors[3] + cursor[3] + " DetectDee" + "\033[0m   | " + colors[18] + cursor[18] + " DetectDee")
+			fmt.Println(colors[4] + cursor[4] + " DetectDee" + "\033[0m   | " + colors[19] + cursor[19] + " DetectDee")
+			fmt.Println(colors[5] + cursor[5] + " DetectDee" + "\033[0m   | " + colors[20] + cursor[20] + " DetectDee")
+			fmt.Println(colors[6] + cursor[6] + " DetectDee" + "\033[0m   | " + colors[21] + cursor[21] + " DetectDee")
+			fmt.Println(colors[7] + cursor[7] + " DetectDee" + "\033[0m   | " + colors[22] + cursor[22] + " DetectDee")
+			fmt.Println(colors[8] + cursor[8] + " DetectDee" + "\033[0m   | " + colors[23] + cursor[23] + " DetectDee")
+			fmt.Println(colors[9] + cursor[9] + " DetectDee" + "\033[0m   | " + colors[24] + cursor[24] + " DetectDee")
+			fmt.Println(colors[10] + cursor[10] + " DetectDee" + "\033[0m   | " + colors[25] + cursor[25] + " DetectDee")
+			fmt.Println(colors[11] + cursor[11] + " DetectDee" + "\033[0m   | " + colors[26] + cursor[26] + " DetectDee")
+			fmt.Println(colors[12] + cursor[12] + " DetectDee" + "\033[0m   | " + colors[27] + cursor[27] + " DetectDee")
+			fmt.Println(colors[13] + cursor[13] + " DetectDee" + "\033[0m   | " + colors[28] + cursor[28] + " DetectDee")
+			fmt.Println(colors[14] + cursor[14] + " DetectDee" + "\033[0m   | " + colors[29] + cursor[29] + " DetectDee")
+			fmt.Println("")
+		}
+
+		first_loop = false
+	}
+}
+
 func main() {
 
 	var (
@@ -87,14 +224,28 @@ func main() {
 	rand.Seed(time.Now().Unix())
 	for i, val := range kraken {
 		changed := 0
+		tries := 0
+		changedArr := []int{}
 		chars := []rune(val)
-		for changed < 30 {
+		for changed < 20 && tries < 50 {
 			index := rand.Intn(len(chars))
+
 			if chars[index] != 10240 {
-				newStr := string(chars[:index]) + "\x1b[2m" + string(chars[index]) + "\033[0m\033[32m\033[1m" + string(chars[index+1:])
-				kraken[i] = newStr
-				changed++
+				found := false
+				for _, v := range changedArr {
+					if v == index {
+						found = true
+						break
+					}
+				}
+				if !found {
+					changedArr = append(changedArr, index)
+					newStr := string(chars[:index]) + "\x1b[2m" + string(chars[index]) + "\033[0m" + "\033[32m\033[1m" + string(chars[index+1:])
+					kraken[i] = newStr
+					changed++
+				}
 			}
+			tries++
 		}
 	}
 
@@ -123,7 +274,13 @@ func main() {
 
 		// Handle Space Bar Press
 		if b[0] == 32 {
-			if hovering == 3 { // Report an issue.
+
+			if hovering == 0 { // tools
+				clearTerminal()
+				toolsMenu()
+			}
+
+			if hovering == 3 { // Report an issue
 				exit()
 			}
 
