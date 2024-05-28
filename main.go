@@ -2,24 +2,31 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"os/exec"
 	"os/signal"
 	"runtime"
 	"syscall"
+	"time"
 )
 
 func exit() {
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/c", "cls")
-	} else {
-		cmd = exec.Command("clear")
-	}
-	cmd.Stdout = os.Stdout
-	cmd.Run()
 
-	exec.Command("stty", "-F", "/dev/tty", "echo").Run()
+	// Revert the terminal settings before exiting
+
+	if runtime.GOOS == "windows" {
+		resetConsoleMode()
+	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+		var flag string
+		if runtime.GOOS == "darwin" {
+			flag = "-f"
+		} else {
+			flag = "-F"
+		}
+		exec.Command("stty", flag, "/dev/tty", "icanon", "echo").Run()
+	}
+
 	os.Exit(0)
 }
 
@@ -34,28 +41,66 @@ func main() {
 
 	if runtime.GOOS == "windows" {
 		setConsoleMode()
-	} else if runtime.GOOS == "darwin" {
-		exec.Command("stty", "-f", "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
-		exec.Command("stty", "-f", "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
-	} else if runtime.GOOS == "linux" {
-		exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
-		exec.Command("stty", "-F", "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
+	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+		var flag string
+		if runtime.GOOS == "darwin" {
+			flag = "-f"
+		} else {
+			flag = "-F"
+		}
+		exec.Command("stty", flag, "/dev/tty", "cbreak", "min", "1").Run() // disable input buffering
+		exec.Command("stty", flag, "/dev/tty", "-echo").Run()              // do not display entered characters on the screen
 	}
 
-	hovering := 0
-	options := []string{"module", "booty", "help", "report", "exit"}
-	colors := make([]string, len(options))
-	cursor := make([]string, len(options))
-	first_loop := true
+	var (
+		hovering          = 0
+		options           = []string{"module", "booty", "help", "report", "exit"}
+		colors            = make([]string, len(options))
+		cursor            = make([]string, len(options))
+		first_loop        = true
+		b          []byte = make([]byte, 1)
+	)
 
-	var b []byte = make([]byte, 1)
+	ke := "\033[0m\033[32m\033[1m"
+	kraken := []string{
+		"⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+		"⠀⠀⠀⠀⣠⡤⣤⣄⣾⣿⣿⣿⣿⣿⣿⣷⣠⣀⣄⡀⠀⠀⠀⠀",
+		"⠀⠀⠀⠀⠙⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣬⡿⠀⠀⠀⠀",
+		"⠀⠀⠀⠀⠀⢀⣼⠟⢿⣿⣿⣿⣿⣿⣿⡿⠘⣷⣄⠀⠀⠀⠀⠀",
+		"⣰⠛⠛⣿⢠⣿⠋⠀⠀⢹⠻⣿⣿⡿⢻⠁⠀⠈⢿⣦⠀⠀⠀⠀",
+		"⢈⣵⡾⠋⣿⣯⠀⠀⢀⣼⣷⣿⣿⣶⣷⡀⠀⠀⢸⣿⣀⣀⠀⠀",
+		"⢾⣿⣀⠀⠘⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⠿⣿⡁⠀⠀⠀",
+		"⠈⠙⠛⠿⠿⠿⢿⣿⡿⣿⣿⡿⢿⣿⣿⣿⣷⣄⠀⠘⢷⣆⠀⠀",
+		"⠀⠀⠀⠀⠀⢠⣿⠏⠀⣿⡏⠀⣼⣿⠛⢿⣿⣿⣆⠀⠀⣿⡇⡀",
+		"⠀⠀⠀⠀⢀⣾⡟⠀⠀⣿⣇⠀⢿⣿⡀⠈⣿⡌⠻⠷⠾⠿⣻⠁",
+		"⠀⠀⣠⣶⠟⠫⣤⠀⠀⢸⣿⠀⣸⣿⢇⡤⢼⣧⠀⠀⠀⢀⣿⠀",
+		"⠀⣾⡏⠀⡀⣠⡟⠀⠀⢀⣿⣾⠟⠁⣿⡄⠀⠻⣷⣤⣤⡾⠋⠀",
+		"⠀⠙⠷⠾⠁⠻⣧⣀⣤⣾⣿⠋⠀⠀⢸⣧⠀⠀⠀⠉⠁⠀⠀⠀",
+		"⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿⠀⠀⠀⠀⠀⠀⠀⠀",
+		"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠿⠟⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀",
+	}
+
+	// Put random spots to the kraken
+	rand.Seed(time.Now().Unix())
+	for i, val := range kraken {
+		changed := 0
+		chars := []rune(val)
+		for changed < 30 {
+			index := rand.Intn(len(chars))
+			if chars[index] != 10240 {
+				newStr := string(chars[:index]) + "\x1b[2m" + string(chars[index]) + "\033[0m\033[32m\033[1m" + string(chars[index+1:])
+				kraken[i] = newStr
+				changed++
+			}
+		}
+	}
+
 	for {
 		if !first_loop {
 			os.Stdin.Read(b)
 		}
 
-		// Up
-		if b[0] == 107 {
+		if b[0] == 107 { // Up
 			if hovering == 0 {
 				hovering = len(options) - 1
 			} else {
@@ -63,12 +108,22 @@ func main() {
 			}
 		}
 
-		// Down
-		if b[0] == 106 {
+		if b[0] == 106 { // Down
 			if hovering == len(options)-1 {
 				hovering = 0
 			} else {
 				hovering += 1
+			}
+		}
+
+		if b[0] == 10 { // Enter
+
+			if hovering == 3 { // Report an issue.
+				exit()
+			}
+
+			if hovering == 4 { // Exit
+				exit()
 			}
 		}
 
@@ -84,26 +139,27 @@ func main() {
 			}
 
 			if !first_loop {
-				fmt.Printf("\033[%dA", 16)
+				fmt.Printf("\033[%dA", 17)
 				fmt.Print("\033[2K")
 			}
 
-			fmt.Println("\033[32m\033[1m" + `
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⣠⡤⣤⣄⣾⣿⣿⣿⣿⣿⣿⣷⣠⣀⣄⡀` + "\033[0m\033[1m\t " + `GhostShip v0.1.0` + "\033[32m\033[1m" + `
-⠀⠀⠀⠀⠙⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣬⡿` + "\033[0m\t by: \033]8;;https://reeceharris.net\033\\notreeceharris\033]8;;\033\\\033[32m\033[1m" + `
-⠀⠀⠀⠀⠀⢀⣼⠟⢿⣿⣿⣿⣿⣿⣿⡿⠘⣷⣄
-⣰⠛⠛⣿⢠⣿⠋⠀⠀⢹⠻⣿⣿⡿⢻⠁⠀⠈⢿⣦` + "\033[0m\033[2m\t " + `A pirate-themed penetration testing framework,` + "\033[0m\033[32m\033[1m" + `
-⢈⣵⡾⠋⣿⣯⠀⠀⢀⣼⣷⣿⣿⣶⣷⡀⠀⠀⢸⣿⣀⣀` + "\033[0m\033[2m\t " + `built using reliable tools and custom scripts.` + "\033[0m\033[32m\033[1m" + `
-⢾⣿⣀⠀⠘⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⠿⣿⡁
-⠈⠙⠛⠿⠿⠿⢿⣿⡿⣿⣿⡿⢿⣿⣿⣿⣷⣄⠀⠘⢷⣆` + "\033[0m" + colors[0] + "\t " + cursor[0] + ` modules` + "\033[32m\033[1m" + `
-⠀⠀⠀⠀⠀⢠⣿⠏⠀⣿⡏⠀⣼⣿⠛⢿⣿⣿⣆⠀⠀⣿⡇⡀` + "\033[0m" + colors[1] + " " + cursor[1] + " booty \033[2m(captures)" + "\033[0m\033[32m\033[1m" + `⠀
-⠀⠀⠀⠀⢀⣾⡟⠀⠀⣿⣇⠀⢿⣿⡀⠈⣿⡌⠻⠷⠾⠿⣻⠁` + "\033[0m" + colors[2] + " " + cursor[2] + " sos \033[2m(help)" + "\033[0m\033[32m\033[1m" + `⠀
-⠀⠀⣠⣶⠟⠫⣤⠀⠀⢸⣿⠀⣸⣿⢇⡤⢼⣧⠀⠀⠀⢀⣿` + "\033[0m" + colors[3] + "\t " + cursor[3] + ` report issue` + "\033[32m\033[1m" + `⠀
-⠀⣾⡏⠀⡀⣠⡟⠀⠀⢀⣿⣾⠟⠁⣿⡄⠀⠻⣷⣤⣤⡾⠋` + "\033[0m" + colors[4] + "\t " + cursor[4] + " disembark \033[2m(exit)" + "\033[0m\033[32m\033[1m" + `⠀
-⠀⠙⠷⠾⠁⠻⣧⣀⣤⣾⣿⠋⠀⠀⢸⣧⠀⠀⠀⠉⠁
-⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿` + "\033[0m\033[2m\t " + `(k = up, j = down, enter = submit)` + "\033[0m\033[32m\033[1m" + `
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠿⠟⠛⠁` + "\033[0m")
+			fmt.Println("")
+			fmt.Println(ke + kraken[0] + "\033[0m")
+			fmt.Println(ke + kraken[1] + "\033[0m\033[1m GhostShip v0.1.0")
+			fmt.Println(ke + kraken[2] + "\033[0m by: \033]8;;https://reeceharris.net\033\\notreeceharris\033]8;;\033\\\033[32m\033[1m")
+			fmt.Println(ke + kraken[3] + "\033[0m")
+			fmt.Println(ke + kraken[4] + "\033[0m\033[2m A pirate-themed penetration testing framework,")
+			fmt.Println(ke + kraken[5] + "\033[0m\033[2m built using reliable tools and custom scripts.")
+			fmt.Println(ke + kraken[6] + "\033[0m")
+			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + " " + cursor[0] + " man-o-war    \033[2m(tools)")
+			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + " " + cursor[1] + " booty        \033[2m(captures)")
+			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + " " + cursor[2] + " sos          \033[2m(help)")
+			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + " " + cursor[3] + " bounty       \033[2m(report issue)")
+			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + " " + cursor[4] + " disembark    \033[2m(exit)")
+			fmt.Println(ke + kraken[12] + "\033[0m")
+			fmt.Println(ke + kraken[13] + "\033[0m\033[2m" + ` (k = up, j = down, enter = submit)`)
+			fmt.Println(ke + kraken[14] + "\033[0m")
+			fmt.Println("")
 		}
 
 		first_loop = false
