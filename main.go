@@ -14,7 +14,6 @@ import (
 func exit() {
 
 	// Revert the terminal settings before exiting
-
 	if runtime.GOOS == "windows" {
 		resetConsoleMode()
 	} else if runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
@@ -95,7 +94,7 @@ func main() {
 		}
 	}
 
-	for {
+	for { // Input loop
 		if !first_loop {
 			os.Stdin.Read(b)
 		}
