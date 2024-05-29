@@ -34,23 +34,9 @@ func exit() {
 func clearTerminal() {
 	fmt.Printf("\033[%dA", 17)
 	fmt.Print("\033[2K")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
-	fmt.Println("                                                                                    ")
+	for i := 0; i < 17; i++ {
+		fmt.Println("                                                                                    ")
+	}
 }
 
 func toolsMenu() {
@@ -136,7 +122,6 @@ func toolsMenu() {
 			fmt.Print("\033[2K")
 
 			// Print Menu
-
 			fmt.Println("")
 			fmt.Println(manowar[0] + " \033[0m\033[1m GhostShip v0.1.0\033[0m")
 			fmt.Println(manowar[1] + "\033[0m by: \033]8;;https://reeceharris.net\033\\notreeceharris\033]8;;\033\\\033[32m\033[1m")
@@ -154,24 +139,6 @@ func toolsMenu() {
 			fmt.Println(manowar[13] + " \033[2m (k = up, j = down, space = submit) \033[0m")
 			fmt.Println(manowar[14])
 			fmt.Println(" ")
-
-			/* fmt.Println(" ")
-			fmt.Println(colors[0] + cursor[0] + " Go Back" + "\033[0m")
-			fmt.Println(" ")
-			fmt.Println("  OSINT TOOLS       |  EXPLOITATION TOOLS  |  POST-EXPLOITATION TOOLS")
-			fmt.Println(" -------------------|----------------------|-------------------------")
-			fmt.Println(colors[1] + cursor[1] + " DetectDee" + "\033[0m        | " + colors[2] + cursor[2] + " SqlMap" + "\033[0m            | " + colors[3] + cursor[3] + " Reporting")
-			fmt.Println(colors[1] + cursor[1] + " WhatWeb" + "\033[0m          | " + colors[2] + cursor[2] + " Netcat" + "\033[0m            | " + colors[3] + cursor[3] + " Ghost Framework")
-			fmt.Println(colors[1] + cursor[1] + " Nmap" + "\033[0m             | " + colors[2] + cursor[2] + " Aircrack-ng" + "\033[0m       | " + colors[3] + cursor[3] + " SSH-Snake")
-			fmt.Println(colors[1] + cursor[1] + " Recon-ng" + "\033[0m         | " + colors[2] + cursor[2] + " Hashcat" + "\033[0m           | " + colors[3] + cursor[3] + " psEmpire")
-			fmt.Println(colors[1] + cursor[1] + " theHarvester" + "\033[0m     | " + colors[2] + cursor[2] + " Hydra" + "\033[0m             | " + colors[3] + cursor[3] + " Mimikatz")
-			fmt.Println(colors[1] + cursor[1] + "     " + "\033[0m             | " + colors[2] + cursor[2] + " Nikto" + "\033[0m             | " + colors[3] + cursor[3] + " LaZagne")
-			fmt.Println(" ")
-			fmt.Println(" ")
-			fmt.Println(" ")
-			fmt.Println(" ")
-			fmt.Println(" ")
-			fmt.Println(" ") */
 		}
 
 		first_loop = false
@@ -270,7 +237,13 @@ func mainMenu(init_clear bool) {
 			}
 
 			if hovering == 3 { // Report an issue
-				exit()
+				err := openURL("https://github.com/ChatterSec/GhostShip/issues")
+				if err != nil {
+					clearTerminal()
+					fmt.Printf("\033[%dA", 17)
+					fmt.Print("\033[2K")
+					fmt.Println("Issue opening issue url, please follow manually: https://github.com/ChatterSec/GhostShip/issues")
+				}
 			}
 
 			if hovering == 4 { // Exit
@@ -304,7 +277,7 @@ func mainMenu(init_clear bool) {
 			fmt.Println(ke + kraken[5] + "\033[0m\033[2m built using reliable tools and custom scripts.")
 			fmt.Println(ke + kraken[6] + "\033[0m")
 			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + cursor[0] + " man-o-war    \033[2m(tools)")
-			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + cursor[1] + " booty        \033[2m(captures)")
+			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + cursor[1] + " booty        \033[2m(0 captures)")
 			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + cursor[2] + " adjustments  \033[2m(settings)")
 			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + cursor[3] + " bounty       \033[2m(report issue)")
 			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + cursor[4] + " disembark    \033[2m(exit)")

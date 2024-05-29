@@ -12,18 +12,21 @@ var (
 		category    string
 		description string
 		path        string
+		url         string
 	}{
 		{
 			name:        "DetectDee",
 			category:    "osint",
 			description: "Hunt down social media accounts by username, email or phone across social networks.",
 			path:        "detectdee/detectdee.go",
+			url:         "https://github.com/piaolin/DetectDee",
 		},
 		{
 			name:        "DetectDee",
 			category:    "osint",
 			description: "Hunt down social media accounts by username, email or phone across social networks.",
 			path:        "detectdee/detectdee.go",
+			url:         "https://github.com/piaolin/DetectDee",
 		},
 	}
 )
@@ -33,6 +36,7 @@ func listAllModules() []struct {
 	category    string
 	description string
 	path        string
+	url         string
 } {
 	return register
 }
@@ -42,6 +46,7 @@ func listCategory(cat string) []struct {
 	category    string
 	description string
 	path        string
+	url         string
 } {
 	validCategory := false
 
@@ -56,6 +61,7 @@ func listCategory(cat string) []struct {
 		category    string
 		description string
 		path        string
+		url         string
 	}{}
 
 	if !validCategory {
