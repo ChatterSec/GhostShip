@@ -55,26 +55,35 @@ func toolsMenu() {
 
 	var (
 		hovering          = 0
-		options           = []string{"all", "osint", "exploitation", "post-exploitation", "reporting", "settings", "search", "back"}
+		options           = []string{"all", "osint", "exploitation", "post-exploitation", "reporting", "search", "back"}
 		colors            = make([]string, len(options))
 		cursor            = make([]string, len(options))
 		first_loop        = true
 		b          []byte = make([]byte, 1)
 	)
 
-	cutlass := []string{
-		"   \x1b[31m^\033[0m     ",
-		"  \x1b[31m|\033[0m.|    ",
-		"  |\x1b[31m|\033[0m|    ",
-		"  |\x1b[31m|\033[0m|    ",
-		"  \x1b[31m|\033[0m||    ",
-		"  \x1b[31m|\033[0m||    ",
-		"  |\x1b[31m|\033[0m|    ",
-		"\033[33m__\033[0m||\x1b[31m|\033[0m\033[33m_   \033[0m",
-		"\033[33m`----.`  \033[0m",
-		"\033[33m  ||  )) \033[0m",
-		"\033[33m  |'-',  \033[0m",
-		"\033[33m   '-'   \033[0m",
+	manowar := []string{
+		"\033[32m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m\033[1m⣀⠀⠤⠴⠶\033[32m⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m ",
+		"\033[0m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀ \033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀\033[0m\033[1m⠂⠉\033[32m⡇⠀⠀⠀\033[0m\033[1m⢰⣿⣿⣿⣿⣧⠀⠀⢀⣄⣀⠀⠀⠀\033[0m ",
+		"\033[0m\033[1m⠀⠀⠀⢠⣶⣶⣷⠀⠀⠀⠸⠟⠁⠀\033[32m⡇⠀⠀⠀⠀⠀⢹⠀⠀⠀\033[0m ",
+		"\033[0m\033[1m⠀⠀⠀⠘⠟\033[32m⢸\033[0m\033[1m⣋⣀⡀⢀⣤⣶⣿⣿⣿⣿⣿⡿⠛⣠⣼⣿⡟⠀\033[0m ",
+		"\033[0m\033[1m⠀⠀⣴⣾⣿⣿⣿⣿⢁⣾⣿⣿⣿⣿⣿⣿⡿⢁⣾⣿⣿⣿⠁⠀\033[0m ",
+		"\033[0m\033[1m⠀⠸⣿⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⡇⢸⣿⣿⣿⠿⠇⠀\033[0m ",
+		"\033[32m\033[1m⠳⣤⣀\033[0m\033[1m⠘⠛⢻⠿⣿⠸⣿⣿⣿⣿⣿⣿⣿⣇⠘⠉⠀\033[32m⢸⠀⢀⣠\033[0m ",
+		"\033[32m\033[1m⠀⠈⠻⣷⣦⣼\033[0m\033[1m⠀⠀⠀⢻⣿⣿⠿⢿⡿⠿⣿⡄⠀⠀\033[32m ⣼⣷⣿⣿\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠈⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣶⣄\033[0m⡈⠉\033[32m⠀⠀⢸⡇⠀⠀\033[0m\033[1m⠉⠂\033[32m⠀⣿⣿⣿⣧\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀⠘⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣷⣤⣀⣸⣧⣠⣤⣴⣶⣾⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⡿\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀⠀⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⠇\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀⠀⠘⢿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿⣿⣿⠿⠟⠛⠉⠀\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀\033[0m ",
+	}
+
+	moduleCount := len(listAllModules())
+	prefix := "s"
+
+	if moduleCount == 1 {
+		prefix = ""
 	}
 
 	for {
@@ -103,7 +112,7 @@ func toolsMenu() {
 		// Handle Space Bar Press
 		if b[0] == 32 {
 
-			if hovering == 7 { // Back
+			if hovering == 6 { // Back
 				clearTerminal()
 				mainMenu(true)
 			}
@@ -112,7 +121,7 @@ func toolsMenu() {
 		if b[0] == 106 || b[0] == 74 || b[0] == 107 || b[0] == 75 || first_loop {
 			for i := range options {
 				if i == hovering {
-					colors[i] = "\033[33m"
+					colors[i] = "\033[32m"
 					cursor[i] = " >"
 				} else {
 					colors[i] = "\033[0m"
@@ -127,20 +136,20 @@ func toolsMenu() {
 
 			fmt.Println(" ")
 			fmt.Println(" ")
-			fmt.Println(cutlass[0])
-			fmt.Println(cutlass[1] + colors[0] + cursor[0] + " All   \033[2m(58 Tools)" + "\033[0m")
-			fmt.Println(cutlass[2] + colors[1] + cursor[1] + " Osint \033[2m(Open-source Intelligence)" + "\033[0m")
-			fmt.Println(cutlass[3] + colors[2] + cursor[2] + " Exploitation" + "\033[0m")
-			fmt.Println(cutlass[4] + colors[3] + cursor[3] + " Post-Exploitation" + "\033[0m")
-			fmt.Println(cutlass[5] + colors[4] + cursor[4] + " Reporting" + "\033[0m")
-			fmt.Println(cutlass[6])
-			fmt.Println(cutlass[7])
-			fmt.Println(cutlass[8] + colors[5] + cursor[5] + " Settings" + "\033[0m")
-			fmt.Println(cutlass[9] + colors[6] + cursor[6] + " Search" + "\033[0m")
-			fmt.Println(cutlass[10] + colors[7] + cursor[7] + " Go Back" + "\033[0m")
-			fmt.Println(cutlass[11])
-			fmt.Println(" ")
-			fmt.Println("\033[2m (k = up, j = down, space = submit) \033[0m")
+			fmt.Println(manowar[0] + " \033[0m\033[1m GhostShip v0.1.0\033[0m")
+			fmt.Println(manowar[1] + " \033[2mA collection of " + fmt.Sprint(moduleCount) + " hacking tool" + prefix + "\033[0m")
+			fmt.Println(manowar[2])
+			fmt.Println(manowar[3] + " " + colors[0] + cursor[0] + " all hands   \033[2m(all tools)" + "\033[0m")
+			fmt.Println(manowar[4] + " " + colors[1] + cursor[1] + " osint       \033[2m(open-source intelligence)" + "\033[0m")
+			fmt.Println(manowar[5] + " " + colors[2] + cursor[2] + " exploitation" + "\033[0m")
+			fmt.Println(manowar[6] + " " + colors[3] + cursor[3] + " post-exploitation" + "\033[0m")
+			fmt.Println(manowar[7] + " " + colors[4] + cursor[4] + " reporting" + "\033[0m")
+			fmt.Println(manowar[8])
+			fmt.Println(manowar[9] + " " + colors[5] + cursor[5] + " scour       \033[2m(search)" + "\033[0m")
+			fmt.Println(manowar[10] + " " + colors[6] + cursor[6] + " bout ship   \033[2m(go back)" + "\033[0m")
+			fmt.Println(manowar[11])
+			fmt.Println(manowar[12] + " \033[2m (k = up, j = down, space = submit) \033[0m")
+			fmt.Println(manowar[13])
 			fmt.Println(" ")
 
 			/* fmt.Println(" ")
@@ -170,7 +179,7 @@ func mainMenu(init_clear bool) {
 
 	var (
 		hovering          = 0
-		options           = []string{"module", "booty", "help", "report", "exit"}
+		options           = []string{"module", "booty", "settings", "report", "exit"}
 		colors            = make([]string, len(options))
 		cursor            = make([]string, len(options))
 		first_loop        = true
@@ -180,21 +189,21 @@ func mainMenu(init_clear bool) {
 
 	ke := "\033[0m\033[32m\033[1m"
 	kraken := []string{
-		"⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀",
-		"⠀⠀⠀⠀⣠⡤⣤⣄⣾⣿⣿⣿⣿⣿⣿⣷⣠⣀⣄⡀⠀⠀⠀⠀",
-		"⠀⠀⠀⠀⠙⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣬⡿⠀⠀⠀⠀",
-		"⠀⠀⠀⠀⠀⢀⣼⠟⢿⣿⣿⣿⣿⣿⣿⡿⠘⣷⣄⠀⠀⠀⠀⠀",
-		"⣰⠛⠛⣿⢠⣿⠋⠀⠀⢹⠻⣿⣿⡿⢻⠁⠀⠈⢿⣦⠀⠀⠀⠀",
-		"⢈⣵⡾⠋⣿⣯⠀⠀⢀⣼⣷⣿⣿⣶⣷⡀⠀⠀⢸⣿⣀⣀⠀⠀",
-		"⢾⣿⣀⠀⠘⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⠿⣿⡁⠀⠀⠀",
-		"⠈⠙⠛⠿⠿⠿⢿⣿⡿⣿⣿⡿⢿⣿⣿⣿⣷⣄⠀⠘⢷⣆⠀⠀",
-		"⠀⠀⠀⠀⠀⢠⣿⠏⠀⣿⡏⠀⣼⣿⠛⢿⣿⣿⣆⠀⠀⣿⡇⡀",
-		"⠀⠀⠀⠀⢀⣾⡟⠀⠀⣿⣇⠀⢿⣿⡀⠈⣿⡌⠻⠷⠾⠿⣻⠁",
-		"⠀⠀⣠⣶⠟⠫⣤⠀⠀⢸⣿⠀⣸⣿⢇⡤⢼⣧⠀⠀⠀⢀⣿⠀",
-		"⠀⣾⡏⠀⡀⣠⡟⠀⠀⢀⣿⣾⠟⠁⣿⡄⠀⠻⣷⣤⣤⡾⠋⠀",
-		"⠀⠙⠷⠾⠁⠻⣧⣀⣤⣾⣿⠋⠀⠀⢸⣧⠀⠀⠀⠉⠁⠀⠀⠀",
-		"⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿⠀⠀⠀⠀⠀⠀⠀⠀",
-		"⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠿⠟⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀",
+		" ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀ ",
+		" ⠀⠀⠀⠀⣠⡤⣤⣄⣾⣿⣿⣿⣿⣿⣿⣷⣠⣀⣄⡀⠀⠀⠀⠀ ",
+		" ⠀⠀⠀⠀⠙⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣬⡿⠀⠀⠀⠀ ",
+		" ⠀⠀⠀⠀⠀⢀⣼⠟⢿⣿⣿⣿⣿⣿⣿⡿⠘⣷⣄⠀⠀⠀⠀⠀ ",
+		" ⣰⠛⠛⣿⢠⣿⠋⠀⠀⢹⠻⣿⣿⡿⢻⠁⠀⠈⢿⣦⠀⠀⠀⠀ ",
+		" ⢈⣵⡾⠋⣿⣯⠀⠀⢀⣼⣷⣿⣿⣶⣷⡀⠀⠀⢸⣿⣀⣀⠀⠀ ",
+		" ⢾⣿⣀⠀⠘⠻⠿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⠿⣿⡁⠀⠀⠀ ",
+		" ⠈⠙⠛⠿⠿⠿⢿⣿⡿⣿⣿⡿⢿⣿⣿⣿⣷⣄⠀⠘⢷⣆⠀⠀ ",
+		" ⠀⠀⠀⠀⠀⢠⣿⠏⠀⣿⡏⠀⣼⣿⠛⢿⣿⣿⣆⠀⠀⣿⡇⡀ ",
+		" ⠀⠀⠀⠀⢀⣾⡟⠀⠀⣿⣇⠀⢿⣿⡀⠈⣿⡌⠻⠷⠾⠿⣻⠁ ",
+		" ⠀⠀⣠⣶⠟⠫⣤⠀⠀⢸⣿⠀⣸⣿⢇⡤⢼⣧⠀⠀⠀⢀⣿⠀ ",
+		" ⠀⣾⡏⠀⡀⣠⡟⠀⠀⢀⣿⣾⠟⠁⣿⡄⠀⠻⣷⣤⣤⡾⠋⠀ ",
+		" ⠀⠙⠷⠾⠁⠻⣧⣀⣤⣾⣿⠋⠀⠀⢸⣧⠀⠀⠀⠉⠁⠀⠀⠀ ",
+		" ⠀⠀⠀⠀⠀⠀⠈⠉⠉⠹⣿⣄⠀⠀⣸⡿⠀⠀⠀⠀⠀⠀⠀⠀ ",
+		" ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠿⠟⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀ ",
 	}
 
 	// Put random spots to the kraken
@@ -291,9 +300,9 @@ func mainMenu(init_clear bool) {
 			fmt.Println(ke + kraken[4] + "\033[0m\033[2m A pirate-themed penetration testing framework,")
 			fmt.Println(ke + kraken[5] + "\033[0m\033[2m built using reliable tools and custom scripts.")
 			fmt.Println(ke + kraken[6] + "\033[0m")
-			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + cursor[0] + " armory       \033[2m(tools)")
+			fmt.Println(ke + kraken[7] + "\033[0m" + colors[0] + cursor[0] + " man-o-war    \033[2m(tools)")
 			fmt.Println(ke + kraken[8] + "\033[0m" + colors[1] + cursor[1] + " booty        \033[2m(captures)")
-			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + cursor[2] + " sos          \033[2m(help)")
+			fmt.Println(ke + kraken[9] + "\033[0m" + colors[2] + cursor[2] + " adjustments  \033[2m(settings)")
 			fmt.Println(ke + kraken[10] + "\033[0m" + colors[3] + cursor[3] + " bounty       \033[2m(report issue)")
 			fmt.Println(ke + kraken[11] + "\033[0m" + colors[4] + cursor[4] + " disembark    \033[2m(exit)")
 			fmt.Println(ke + kraken[12] + "\033[0m")
