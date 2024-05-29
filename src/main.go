@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"syscall"
 	"time"
+
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func exit() {
@@ -63,15 +65,16 @@ func toolsMenu() {
 	)
 
 	manowar := []string{
-		"\033[32m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m\033[1m⣀⠀⠤⠴⠶\033[32m⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m\033[1m⣀⠀⠤⠴⣶\033[32m⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m ",
+		"\033[0m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠉ ⠛⠟\033[32m⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀\033[0m  ",
 		"\033[0m\033[1m⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀ \033[0m ",
-		"\033[32m\033[1m⠀⠀⠀⠀\033[0m\033[1m⠂⠉\033[32m\033[2m⡇⠀⠀⠀\033[0m\033[1m⢰⣿⣿⣿⣿⣧⠀⠀⢀⣄⣀⠀⠀⠀\033[0m ",
+		"\033[32m\033[1m⠀⠀⠀\033[0m\033[1m       \033[0m\033[1m⢰⣿⣿⣿⣿⣧⠀⠀⢀⣄⣀⠀⠀⠀\033[0m ",
 		"\033[0m\033[1m⠀⠀⠀⢠⣶⣶⣷⠀⠀⠀⠸⠟⠁⠀\033[32m⡇⠀⠀⠀⠀⠀⢹⠀⠀⠀\033[0m ",
 		"\033[0m\033[1m⠀⠀⠀⠘⠟\033[32m⢸\033[0m\033[1m⣋⣀⡀⢀⣤⣶⣿⣿⣿⣿⣿⡿⠛⣠⣼⣿⡟⠀\033[0m ",
 		"\033[0m\033[1m⠀⠀⣴⣾⣿⣿⣿⣿⢁⣾⣿⣿⣿⣿⣿⣿⡿⢁⣾⣿⣿⣿⠁⠀\033[0m ",
 		"\033[0m\033[1m⠀⠸⣿⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⡇⢸⣿⣿⣿⠿⠇⠀\033[0m ",
 		"\033[32m\033[1m⠳⣤⣀\033[0m\033[1m⠘⠛⢻⠿⣿⠸⣿⣿⣿⣿⣿⣿⣿⣇⠘⠉⠀\033[32m⢸⠀⢀⣠\033[0m ",
-		"\033[32m\033[1m⠀⠈⠻⣷⣦⣼\033[0m\033[1m⠀⠀⠀⢻⣿⣿⠿⢿⡿⠿⣿⡄⠀⠀\033[32m ⣼⣷⣿⣿\033[0m ",
+		"\033[32m\033[1m⠀⠈⠻⣷⣦⣼\033[0m\033[1m⠀⠀⠀⢻⣿⣿⠿⢿⡿⠿⣿⡄⠀⠀\033[32m ⣼⣷⣿⣿\033[0m",
 		"\033[32m\033[1m⠀⠀⠀⠈⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣶⣄\033[0m⡈⠉\033[32m⠀⠀⢸⡇⠀⠀\033[0m\033[1m⠉⠂\033[32m⠀⣿⣿⣿⣧\033[0m ",
 		"\033[32m\033[1m⠀⠀⠀⠀⠘⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣷⣤⣀⣸⣧⣠⣤⣴⣶⣾⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⡿\033[0m ",
 		"\033[32m\033[1m⠀⠀⠀⠀⠀⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⣿⣿\033[2m⣿\033[0m\033[1m\033[32m⣿⠇\033[0m ",
@@ -134,22 +137,22 @@ func toolsMenu() {
 
 			// Print Menu
 
-			fmt.Println(" ")
-			fmt.Println(" ")
+			fmt.Println("")
 			fmt.Println(manowar[0] + " \033[0m\033[1m GhostShip v0.1.0\033[0m")
-			fmt.Println(manowar[1] + " \033[2mA collection of " + fmt.Sprint(moduleCount) + " hacking tool" + prefix + "\033[0m")
+			fmt.Println(manowar[1] + "\033[0m by: \033]8;;https://reeceharris.net\033\\notreeceharris\033]8;;\033\\\033[32m\033[1m")
 			fmt.Println(manowar[2])
-			fmt.Println(manowar[3] + " " + colors[0] + cursor[0] + " all hands   \033[2m(all tools)" + "\033[0m")
-			fmt.Println(manowar[4] + " " + colors[1] + cursor[1] + " osint       \033[2m(open-source intelligence)" + "\033[0m")
-			fmt.Println(manowar[5] + " " + colors[2] + cursor[2] + " exploitation" + "\033[0m")
-			fmt.Println(manowar[6] + " " + colors[3] + cursor[3] + " post-exploitation" + "\033[0m")
-			fmt.Println(manowar[7] + " " + colors[4] + cursor[4] + " reporting" + "\033[0m")
-			fmt.Println(manowar[8])
-			fmt.Println(manowar[9] + " " + colors[5] + cursor[5] + " scour       \033[2m(search)" + "\033[0m")
-			fmt.Println(manowar[10] + " " + colors[6] + cursor[6] + " bout ship   \033[2m(go back)" + "\033[0m")
-			fmt.Println(manowar[11])
-			fmt.Println(manowar[12] + " \033[2m (k = up, j = down, space = submit) \033[0m")
-			fmt.Println(manowar[13])
+			fmt.Println(manowar[3] + " " + " \033[2mA collection of " + fmt.Sprint(moduleCount) + " hacking tool" + prefix + ".\033[0m")
+			fmt.Println(manowar[4])
+			fmt.Println(manowar[5] + " " + colors[0] + cursor[0] + " all hands   \033[2m(all tools)" + "\033[0m")
+			fmt.Println(manowar[6] + " " + colors[1] + cursor[1] + " osint       \033[2m(open-source intelligence)" + "\033[0m")
+			fmt.Println(manowar[7] + " " + colors[2] + cursor[2] + " exploitation" + "\033[0m")
+			fmt.Println(manowar[8] + " " + colors[3] + cursor[3] + " post-exploitation" + "\033[0m")
+			fmt.Println(manowar[9] + " " + colors[4] + cursor[4] + " captain log \033[2m(reporting)" + "\033[0m")
+			fmt.Println(manowar[10] + " " + colors[5] + cursor[5] + " scour       \033[2m(search)" + "\033[0m")
+			fmt.Println(manowar[11] + " " + colors[6] + cursor[6] + " bout ship   \033[2m(go back)" + "\033[0m")
+			fmt.Println(manowar[12])
+			fmt.Println(manowar[13] + " \033[2m (k = up, j = down, space = submit) \033[0m")
+			fmt.Println(manowar[14])
 			fmt.Println(" ")
 
 			/* fmt.Println(" ")
@@ -213,7 +216,7 @@ func mainMenu(init_clear bool) {
 		tries := 0
 		changedArr := []int{}
 		chars := []rune(val)
-		for changed < 20 && tries < 50 {
+		for changed < 1 && tries < 50 {
 			index := rand.Intn(len(chars))
 
 			if chars[index] != 10240 {
@@ -317,6 +320,23 @@ func mainMenu(init_clear bool) {
 }
 
 func main() {
+
+	width, height, err := terminal.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		fmt.Println("Error getting terminal size:", err)
+		exit()
+	} else {
+
+		if height < 19 {
+			fmt.Println("Please resize your terminal to at least 19 lines. (currently", height, ")")
+			exit()
+		}
+
+		if width < 85 {
+			fmt.Println("Please resize your terminal to at least 85 columns. (currently", width, ")")
+			exit()
+		}
+	}
 
 	// listen for Ctrl+C, and when it's received, revert the terminal settings
 	c := make(chan os.Signal)
